@@ -25,6 +25,7 @@ def test_caret_move_first():
     stk = Stack()
     crt = Caret(stk, fld)
     crt.move(fld)
+    crt.read_instruction(fld)
     assert crt.direction == Vec(0, 0)
     assert crt.current_instruction == '>'
 
@@ -36,6 +37,7 @@ def test_caret_move():
     crt = Caret(stk, fld)
     crt.set_direction(Right)
     crt.move(fld)
+    crt.read_instruction(fld)
     assert crt.direction == Right
     assert crt.current_instruction == 'v'
 
