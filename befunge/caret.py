@@ -2,6 +2,11 @@ from befunge.executor import Executor
 from befunge.field import Field
 from befunge.utils import Stack, Vec
 
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class Caret:
     def __init__(self, stack: Stack, field: Field):
@@ -12,6 +17,7 @@ class Caret:
         self.stack = stack
         self.field = field
         self.string_mode = False
+        logger.debug("Caret init")
 
     def move(self, field):
         self.pos += self.direction
@@ -24,12 +30,15 @@ class Caret:
             self.pos.x = field.width - 1
         if self.pos.y < 0:
             self.pos.y = field.height - 1
-        # print(self.current_instruction)
-        # print(self.stack)
+        logger.debug("Caret move")
+
+    def read_instruction(self, field):
         self.current_instruction = field.get_symbol_at(self.pos.x, self.pos.y)
+        logger.debug("Instruction read")
 
     def switch_string_mode(self):
         self.string_mode = not self.string_mode
+        logger.debug("Mode toggled")
 
     def execute_instruction(self):
         if self.current_instruction == '"':
@@ -41,6 +50,8 @@ class Caret:
             if self.current_instruction != ' ' and \
                     self.current_instruction != '\n':
                 self.executor[self.current_instruction](self)
+        logger.debug("Instruction executed")
 
     def set_direction(self, new_direction):
         self.direction = new_direction
+        logger.debug("Direction changed")

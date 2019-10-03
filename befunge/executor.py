@@ -1,7 +1,13 @@
 from befunge.utils import Up, Right, Down, Left, next_direction
 
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 def load_instructions(instructions: dict):
+    logger.debug("Instructions load start")
     # directions
     instructions['^'] = lambda c: c.set_direction(Up)
     instructions['>'] = lambda c: c.set_direction(Right)
@@ -10,11 +16,15 @@ def load_instructions(instructions: dict):
     instructions['<'] = lambda c: c.set_direction(Left)
 
     # if
-    instructions['-'] = lambda c: c.set_direction(Right) if c.stack.peek() == 0 else c.set_direction(Left)
-    instructions['|'] = lambda c: c.set_direction(Down) if c.stack.peek() == 0 else c.set_direction(Up)
+    instructions['_'] = lambda c: c.set_direction(Right) \
+        if c.stack.pop() == 0 \
+        else c.set_direction(Left)
+    instructions['|'] = lambda c: c.set_direction(Down) \
+        if c.stack.pop() == 0 \
+        else c.set_direction(Up)
 
     instructions['?'] = lambda c: c.set_direction(next_direction())
-    instructions['#'] = lambda c: c.move()
+    instructions['#'] = jump
     instructions['@'] = lambda c: exit()
 
     # stack
@@ -41,52 +51,71 @@ def load_instructions(instructions: dict):
 
     # operations
     instructions['*'] = lambda c: c.stack.push(c.stack.pop() * c.stack.pop())
-    instructions['/'] = lambda c: exec_div
+    instructions['/'] = exec_div
     instructions['+'] = lambda c: c.stack.push(c.stack.pop() + c.stack.pop())
     instructions['-'] = lambda c: c.stack.push(-c.stack.pop() + c.stack.pop())
-    instructions['%'] = lambda c: c.stack.push(c.stack.pop() % c.stack.pop())
+    instructions['%'] = exec_mod
     # logic
     instructions['!'] = lambda c: c.stack.push(0 if c.stack.pop() != 0 else 1)
     instructions['`'] = lambda c: c.stack.push(1 if c.stack.pop() < c.stack.pop() else 0)
 
-    instructions['&'] = lambda c: exec_num_input
-    instructions['~'] = lambda c: exec_char_input
-    instructions['.'] = lambda c: print(c.stack.pop())
+    instructions['&'] = exec_num_input
+    instructions['~'] = exec_char_input
+    instructions['.'] = lambda c: print(c.stack.pop(), end="")
     instructions[','] = lambda c: print(chr(c.stack.pop()), end="")
-    # todo
+    logger.debug("Instructions loaded")
+
+
+def jump(c):
+    c.move(c.field)
+    logger.debug("Jump performed")
 
 
 def exec_num_input(c):
     v = input("Enter a number: ")
     c.stack.push(int(v))
+    logger.debug("Number read")
 
 
 def exec_char_input(c):
     v = input("Enter a character: ")
-    c.stack.push(v[0])
+    c.stack.push(ord(v[0]))
+    logger.debug("Character read")
 
 
 def exec_div(c):
     c.stack.swap()
     c.stack.push(c.stack.pop() / c.stack.pop())
+    logger.debug("division")
+
+
+def exec_mod(c):
+    c.stack.swap()
+    c.stack.push(c.stack.pop() % c.stack.pop())
+    logger.debug("mod division")
 
 
 def exec_p(c):
-    x = c.stack.pop()
     y = c.stack.pop()
+    x = c.stack.pop()
     code = c.stack.pop()
     symb = chr(code)
 
     c.field.set_symbol_at(x, y, symb)
+    logger.debug("put executed")
 
 
 def exec_g(c):
-    x = c.stack.pop()
     y = c.stack.pop()
-    symb = c.field.get_symbol_at(x, y)
-    code = ord(symb)
+    x = c.stack.pop()
+    try:
+        symb = c.field.get_symbol_at(x, y)
+        code = ord(symb)
 
-    c.stack.push(code)
+        c.stack.push(code)
+    except IndexError:
+        c.stack.push(0)
+    logger.debug("get executed")
 
 
 class Executor:

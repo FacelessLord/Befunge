@@ -1,5 +1,10 @@
 from random import randint
 
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class Stack:
     def __init__(self):
@@ -12,23 +17,33 @@ class Stack:
     def push(self, item):
         entry = (item, self.ptr)
         self.ptr = entry
+        logger.debug("stack push")
 
     def pop(self):
+        if self.ptr is None:
+            return 0
         entry = self.ptr
         self.ptr = self.ptr[1]
+        logger.debug("stack pop")
         return entry[0]
 
     def peek(self):
+        if self.ptr is None:
+            logger.debug("stack empty")
+            return 0
+        logger.debug("stack peek")
         return self.ptr[0]
 
     def dup(self):
         self.push(self.peek())
+        logger.debug("stack dup")
 
     def swap(self):
         a = self.pop()
         b = self.pop()
         self.push(a)
         self.push(b)
+        logger.debug("stack swap")
 
     def __str__(self):
         s = "["
@@ -39,6 +54,7 @@ class Stack:
             s += str(last[0]) + ", "
             last = last[1]
         s += "]"
+        logger.debug("stack stringified")
         return s
 
 
