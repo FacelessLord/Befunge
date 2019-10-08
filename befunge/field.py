@@ -5,19 +5,19 @@ class Field:
     def __init__(self, width, height, text: list):
         self.width = width
         self.height = height
-        self._map = []
+        self.map = []
         for i in range(0, height):
             string_list = []
             for j in range(0, width):
                 string_list.append(text[i][j])
-            self._map.append(string_list)
+            self.map.append(string_list)
         logger.debug('Field initialized width: %i, height: %i' % (width, height))
 
     def get_symbol_at(self, x, y):
-        return self._map[y][x]
+        return self.map[y][x]
 
     def set_symbol_at(self, x, y, char):
-        self._map[y][x] = char
+        self.map[y][x] = char
         logger.debug('symbol set at %i,%i' % (x, y))
 
     @classmethod

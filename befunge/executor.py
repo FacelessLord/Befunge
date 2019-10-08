@@ -56,9 +56,18 @@ def load_instructions(instructions: dict):
 
     instructions['&'] = exec_num_input
     instructions['~'] = exec_char_input
-    instructions['.'] = lambda c: print(c.stack.pop(), end="")
-    instructions[','] = lambda c: print(chr(c.stack.pop()), end="")
+    instructions['.'] = lambda c: outprint(c, c.stack.pop())
+    instructions[','] = lambda c: outprint(c, chr(c.stack.pop()))
     logger.debug("Instructions loaded")
+
+
+def outprint(c, obj):
+    obj_str = str(obj)
+    c.new_line_count += obj_str.count('\n')
+    c.diff = obj_str
+    if c.debug:
+        print('\n' * obj_str.count('\n'), end='')
+    c.output += obj_str
 
 
 def jump(c):
