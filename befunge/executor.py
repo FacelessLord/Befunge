@@ -20,7 +20,7 @@ def load_instructions(instructions: dict):
 
     instructions['?'] = lambda c: c.set_direction(next_direction())
     instructions['#'] = jump
-    instructions['@'] = lambda c: exit()
+    instructions['@'] = lambda c: c.executor.stop_execution()
 
     # stack
     instructions[':'] = lambda c: c.stack.dup()
@@ -125,7 +125,11 @@ def exec_g(c):
 class Executor:
     def __init__(self):
         self.instructions = {}
+        self.execute = True
         load_instructions(self.instructions)
 
     def __getitem__(self, item):
         return self.instructions[item]
+
+    def stop_execution(self):
+        self.execute = False

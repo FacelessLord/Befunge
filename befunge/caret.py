@@ -1,5 +1,3 @@
-from time import sleep
-
 from befunge.executor import Executor
 from befunge.field import Field
 from befunge.utils import Stack, Vec, logger
@@ -21,7 +19,6 @@ class Caret:
         logger.debug("Caret init")
 
     def move(self, field):
-        sleep(0.1)
         self.pos += self.direction
         if self.pos.x > field.width - 1:
             self.pos.x = 0

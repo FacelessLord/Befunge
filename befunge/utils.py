@@ -69,8 +69,13 @@ class Stack:
         if last is None:
             return '[ ]'
         while last is not None:
-            s += str(last[0]) + ", "
+            obj_str = str(last[0])
+            if len(obj_str) == 1:
+                if ord(obj_str) < 32:
+                    obj_str = '\\' + str(ord(obj_str))
+            s += obj_str + ", "
             last = last[1]
+        s = s[:-2]
         s += "]"
         logger.debug("stack stringified")
         return s

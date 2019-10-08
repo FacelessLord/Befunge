@@ -48,6 +48,6 @@ def test_stack_to_string():
     stk = Stack()
     assert str(stk) == "[ ]"
     stk.push(2)
-    assert str(stk) == "[2, ]"
+    assert str(stk) == "[2]"
     stk.push(3)
-    assert str(stk) == "[3, 2, ]"
+    assert str(stk) == "[3, 2]"

@@ -24,18 +24,21 @@ def main(filename="", execute=True):
     field = Field.load_file(filename)
     stack = Stack()
     caret = Caret(stack, field, debug)
+    caret.executor.execute = execute
     logger.debug("Objects created")
 
     term = Terminal()
     if debug:
-        sys.stdout.write('\n' * field.height)
+        sys.stdout.write('\n' * (field.height + 1))  # field height shouldn't change
         print_field(caret, field, term)
+
     caret.read_instruction(field)
     caret.execute_instruction()
     if caret.direction == Vec(0, 0):
         caret.direction = Right
+
     logger.debug("Starting loop")
-    while execute:
+    while caret.executor.execute:
         caret.move(field)
         caret.read_instruction(field)
 
@@ -46,14 +49,23 @@ def main(filename="", execute=True):
         caret.execute_instruction()
 
         if debug:
-            readchar()
+            char = readchar()
+            if char == 'c':
+                print('Forced exit')
+                exit()
 
-        # print(str(len(strig)) + '; ' + str(old_length))
         logger.debug("Move performed")
+    print()
+
+
+def to_int(obj):
+    if obj is None:
+        return 0
+    return int(obj)
 
 
 def print_field(caret, field, term):
-    with term.location(0, term.height - field.height - caret.new_line_count):
+    with term.location(0, to_int(term.height) - field.height - caret.new_line_count - 1):
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
@@ -67,6 +79,10 @@ def print_field(caret, field, term):
                 for j in range(caret.pos.x + 1, field.width):
                     sys.stdout.write(field.map[i][j])
                 sys.stdout.write('\n')
+
+        sys.stdout.write(' ' * to_int(term.width))
+        sys.stdout.write('\r' + str(caret.stack) + '\n')
+
         sys.stdout.write(caret.output)
     sys.stdout.flush()
 
