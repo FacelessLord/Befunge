@@ -1,7 +1,4 @@
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from befunge.utils import logger
 
 
 class Field:

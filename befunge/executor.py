@@ -1,9 +1,4 @@
-from befunge.utils import Up, Right, Down, Left, next_direction
-
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from befunge.utils import Up, Right, Down, Left, next_direction, logger
 
 
 def load_instructions(instructions: dict):

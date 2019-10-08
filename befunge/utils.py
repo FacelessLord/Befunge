@@ -1,15 +1,33 @@
+import logging
 from random import randint
 
-import logging
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
+
+def set_log_level(log_level: str):
+    lower = log_level.lower()
+    if lower == 'debug':
+        logging.basicConfig(level=logging.DEBUG)
+        logger.debug("log-level=" + log_level)
+    if lower == 'info':
+        logging.basicConfig(level=logging.INFO)
+        logger.info("log-level=" + log_level)
+    if lower == 'warning':
+        logging.basicConfig(level=logging.WARNING)
+        logger.warning("log-level=" + log_level)
+    if lower == 'error':
+        logging.basicConfig(level=logging.ERROR)
+        logger.error("log-level=" + log_level)
+    if lower == 'critical':
+        logging.basicConfig(level=logging.CRITICAL)
+        logger.critical("log-level=" + log_level)
 
 
 class Stack:
     def __init__(self):
         self.size = 1
         self.ptr = None
+        logger.debug("Stack initialized")
 
     def __len__(self):
         return self.size

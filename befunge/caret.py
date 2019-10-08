@@ -1,11 +1,6 @@
 from befunge.executor import Executor
 from befunge.field import Field
-from befunge.utils import Stack, Vec
-
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from befunge.utils import Stack, Vec, logger
 
 
 class Caret:
@@ -18,6 +13,7 @@ class Caret:
         self.field = field
         self.string_mode = False
         logger.debug("Caret init")
+        print(logger.getEffectiveLevel())
 
     def move(self, field):
         self.pos += self.direction
