@@ -64,9 +64,14 @@ def load_instructions(instructions: dict):
 def outprint(c, obj):
     obj_str = str(obj)
     c.new_line_count += obj_str.count('\n')
+    if c.new_line_count > c.max_new_line_count:
+        while c.new_line_count > c.max_new_line_count:
+            c.output = c.output[c.output.index('\n') + 1:]
+            c.new_line_count -= 1
+
     c.diff = obj_str
-    if c.debug:
-        print('\n' * obj_str.count('\n'), end='')
+    if c.debug and c.new_line_count < c.max_new_line_count and obj_str.count('\n') > 0:
+        print('\n', end='')
     c.output += obj_str
 
 

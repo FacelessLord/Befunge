@@ -21,13 +21,13 @@ def main(filename="", execute=True):
         logger.debug("File is not specified as an argument")
         filename = input(filename_input_promt)
 
+    term = Terminal()
     field = Field.load_file(filename)
     stack = Stack()
-    caret = Caret(stack, field, debug)
+    caret = Caret(stack, field, to_int(term.height - field.height - 3), debug)
     caret.executor.execute = execute
     logger.debug("Objects created")
 
-    term = Terminal()
     if debug:
         sys.stdout.write('\n' * (field.height + 1))  # field height shouldn't change
         print_field(caret, field, term)
@@ -51,7 +51,7 @@ def main(filename="", execute=True):
         if debug:
             char = readchar()
             if char == 'c':
-                print('Forced exit')
+                print('\nForced exit')
                 exit()
 
         logger.debug("Move performed")
@@ -65,7 +65,7 @@ def to_int(obj):
 
 
 def print_field(caret, field, term):
-    with term.location(0, to_int(term.height) - field.height - caret.new_line_count - 1):
+    with term.location(0, max(0, to_int(term.height) - field.height - caret.new_line_count - 1)):
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
