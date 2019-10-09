@@ -41,7 +41,7 @@ def main(execute=True):
             field = Field.from_text(program)
 
     stack = Stack()
-    caret = Caret(stack, field, to_int(term.height - field.height - 3), debug)
+    caret = Caret(stack, field, to_int(term.height) - field.height - 3, debug)
     caret.executor.execute = execute
     logger.debug("Objects created")
 

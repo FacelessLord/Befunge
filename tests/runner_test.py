@@ -8,14 +8,18 @@ from befunge.utils import Stack
 
 def test_runner_load():
     try:
-        runner.main("tests/fld_test_program.txt", False)
+        runner.from_file = True
+        runner.filename = "tests/fld_test_program.txt"
+        runner.main(False)
     except Exception as e:
         raise e
 
 
 def test_runner_run():
     try:
-        runner.main("tests/fld_test_program.txt", True)
+        runner.from_file = True
+        runner.filename = "tests/fld_test_program.txt"
+        runner.main(True)
     except Exception as e:
         raise e
 
