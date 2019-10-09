@@ -4,7 +4,10 @@ from befunge.utils import Stack, Vec, logger
 
 
 class Caret:
-    def __init__(self, stack: Stack, field: Field, max_new_line_count=10, debug=False):
+    def __init__(self, stack: Stack,
+                 field: Field,
+                 max_new_line_count=10,
+                 debug=False):
         self.direction = Vec(0, 0)
         self.pos = Vec(0, 0)
         self.current_instruction = ' '

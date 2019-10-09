@@ -11,7 +11,8 @@ class Field:
             for j in range(0, width):
                 string_list.append(text[i][j])
             self.map.append(string_list)
-        logger.debug('Field initialized width: %i, height: %i' % (width, height))
+        logger.debug('Field initialized width:'
+                     ' %i, height: %i' % (width, height))
 
     def get_symbol_at(self, x, y):
         return self.map[y][x]

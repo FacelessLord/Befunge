@@ -52,7 +52,8 @@ def load_instructions(instructions: dict):
     instructions['%'] = exec_mod
     # logic
     instructions['!'] = lambda c: c.stack.push(0 if c.stack.pop() != 0 else 1)
-    instructions['`'] = lambda c: c.stack.push(1 if c.stack.pop() < c.stack.pop() else 0)
+    instructions['`'] = lambda c: \
+        c.stack.push(1 if c.stack.pop() < c.stack.pop() else 0)
 
     instructions['&'] = exec_num_input
     instructions['~'] = exec_char_input
@@ -70,7 +71,9 @@ def outprint(c, obj):
             c.new_line_count -= 1
 
     c.diff = obj_str
-    if c.debug and c.new_line_count < c.max_new_line_count and obj_str.count('\n') > 0:
+    if c.debug \
+            and c.new_line_count < c.max_new_line_count \
+            and obj_str.count('\n') > 0:
         print('\n', end='')
     c.output += obj_str
 

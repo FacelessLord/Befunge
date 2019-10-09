@@ -27,8 +27,9 @@ def main(execute=True):
             program = '\\'
             print("Enter the program code: ")
             while program[-1] == '\\':
+                # cutting the last character and inserting \n
                 program = program[:-1] + (
-                    '\n' if program != '\\' else '')  # cutting the last character and inserting \n
+                    '\n' if program != '\\' else '')
                 program += input()
             field = Field.from_text(program)
             print('-' * (field.width + 2))
@@ -54,7 +55,8 @@ def main(execute=True):
         except Exception:
             print("You shouldn't use pipe without -p option")
             exit()
-        sys.stdout.write('\n' * (field.height + 1))  # field height shouldn't change
+        # field height shouldn't change
+        sys.stdout.write('\n' * (field.height + 1))
         print_field(caret, field, term)
 
     caret.read_instruction(field)
@@ -87,7 +89,11 @@ def to_int(obj):
 
 
 def print_field(caret, field, term):
-    with term.location(0, max(0, to_int(term.height) - field.height - caret.new_line_count - 1)):
+    with term.location(0, max(0,
+                              to_int(term.height)
+                              - field.height
+                              - caret.new_line_count
+                              - 1)):
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
@@ -118,7 +124,8 @@ if __name__ == '__main__':
             sys.argv.pop(arg_pos)  # remove --log-level
             sys.argv.pop(arg_pos)  # remove level name
         else:
-            print("Please, specify log level: {INFO(by default), DEBUG, ERROR, CRITICAL, FATAl}")
+            print("Please, specify log level: "
+                  "{INFO(by default), DEBUG, ERROR, CRITICAL, FATAl}")
 
     if '-p' in sys.argv:
         from_program = False
