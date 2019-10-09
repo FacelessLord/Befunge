@@ -5,7 +5,6 @@ from blessings import Terminal
 
 from befunge.caret import Caret
 from befunge.field import Field
-from befunge.texts import filename_input_promt
 from befunge.utils import Stack, Right, Vec, logger, set_log_level
 
 if 'linux' in platform.system().lower() or 'osx' in platform.system().lower():
@@ -14,21 +13,47 @@ else:
     from readchar.readchar_windows import readchar
 
 debug = False
+from_file = False
+from_program = True
+filename = ''
 
 
-def main(filename="", execute=True):
-    if filename == "":
-        logger.debug("File is not specified as an argument")
-        filename = input(filename_input_promt)
-
+def main(execute=True):
     term = Terminal()
-    field = Field.load_file(filename)
+    if from_file:
+        field = Field.load_file(filename)
+    else:
+        if from_program:
+            program = '\\'
+            print("Enter the program code: ")
+            while program[-1] == '\\':
+                program = program[:-1] + (
+                    '\n' if program != '\\' else '')  # cutting the last character and inserting \n
+                program += input()
+            field = Field.from_text(program)
+            print('-' * (field.width + 2))
+        else:
+            lines = sys.stdin.readlines()
+            text = lines[0]
+            for line in lines:
+                text += '\n' + line
+            program = text
+            field = Field.from_text(program)
+
     stack = Stack()
     caret = Caret(stack, field, to_int(term.height - field.height - 3), debug)
     caret.executor.execute = execute
     logger.debug("Objects created")
 
     if debug:
+        try:
+            char = readchar()
+            if char == 'c':
+                print('\nForced exit')
+                exit()
+        except Exception:
+            print("You shouldn't use pipe without -p option")
+            exit()
         sys.stdout.write('\n' * (field.height + 1))  # field height shouldn't change
         print_field(caret, field, term)
 
@@ -50,9 +75,6 @@ def main(filename="", execute=True):
 
         if debug:
             char = readchar()
-            if char == 'c':
-                print('\nForced exit')
-                exit()
 
         logger.debug("Move performed")
     print()
@@ -89,17 +111,34 @@ def print_field(caret, field, term):
 
 if __name__ == '__main__':
     if '--log-level' in sys.argv:
-        log_level_pos = sys.argv.index('--log-level')
-        if log_level_pos + 1 <= len(sys.argv):
-            log_level = sys.argv[log_level_pos + 1]
+        arg_pos = sys.argv.index('--log-level')
+        if arg_pos + 1 < len(sys.argv):
+            log_level = sys.argv[arg_pos + 1]
             set_log_level(log_level)
-            sys.argv.pop(log_level_pos)  # remove --log-level
-            sys.argv.pop(log_level_pos)  # remove level name
+            sys.argv.pop(arg_pos)  # remove --log-level
+            sys.argv.pop(arg_pos)  # remove level name
         else:
             print("Please, specify log level: {INFO(by default), DEBUG, ERROR, CRITICAL, FATAl}")
+
+    if '-p' in sys.argv:
+        from_program = False
+        if '--debug' in sys.argv:
+            print("Debug mode is available only with argument-defined program")
+            exit()
+
+    if '-f' in sys.argv:
+        arg_pos = sys.argv.index('-f')
+        from_file = True
+        if arg_pos + 1 < len(sys.argv):
+            filename = sys.argv[arg_pos + 1]
+            sys.argv.pop(arg_pos)  # remove --log-level
+            sys.argv.pop(arg_pos)  # remove level name
+        else:
+            print("Please, specify the file to read from")
+            exit()
 
     if '--debug' in sys.argv:
         debug = True
         sys.argv.pop(sys.argv.index('--debug'))  # remove --debug
 
-    main(sys.argv[1] if len(sys.argv) > 1 else "")
+    main()

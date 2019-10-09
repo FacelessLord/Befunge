@@ -17,6 +17,13 @@
 ## Консольная версия
 Пример запуска: `./python3 runner.py`
 
+## Аргументы запуска
+* `--log-level` - указать уровень логгирования: INFO(по умолчанию), DEBUG, ERROR, CRITICAL, FATAl
+(Прим: python3 runner.py --log-level DEBUG)
+* `-p` - ввод через цепочку вызовов (Прим: cat program.txt | python3 runner.py -p)
+* `-f` - чтение из файла (Прим: python3 runner.py -f program.txt)
+* `--debug` - debug-режим (доступен только для файла и программы, введённой вручную)
+
 ## Пример программы
 <pre>>1    v
       

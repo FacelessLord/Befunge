@@ -26,10 +26,26 @@ class Field:
             lines = f.readlines()
             logger.debug('file %s loaded' % filename)
 
+        # cutting \n
         for i in range(0, len(lines)):
             if i != len(lines) - 1:
                 lines[i] = lines[i][0:-1]
 
+        height = len(lines)
+        width = len(lines[0])
+
+        for line in lines:
+            if len(line) > width:
+                width = len(line)
+
+        for i in range(0, len(lines)):
+            lines[i] += ' ' * (width - len(lines[i]))
+
+        return Field(width, height, lines)
+
+    @classmethod
+    def from_text(cls, text: str):
+        lines = text.split('\n')
         height = len(lines)
         width = len(lines[0])
 
