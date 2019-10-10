@@ -96,9 +96,9 @@ def to_int(obj):
 
 def print_field(caret, field, term: Terminal):
     term.fullscreen()
-    sys.stdout.write((' ' * term.width + '\n') * (field.height + 1 + caret.max_new_line_count))
+    sys.stdout.write((' ' * to_int(term.width) + '\n') * (field.height + 1 + caret.max_new_line_count))
     with term.location(0, 0):
-        print('-' * term.width)
+        print('-' * to_int(term.width))
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
@@ -115,7 +115,7 @@ def print_field(caret, field, term: Terminal):
 
         sys.stdout.write(' ' * to_int(term.width))
         sys.stdout.write('\r' + str(caret.stack) + '\n')
-        print('-' * term.width)
+        print('-' * to_int(term.width))
         sys.stdout.write(caret.output)
     sys.stdout.flush()
 
