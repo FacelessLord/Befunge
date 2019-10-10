@@ -96,7 +96,8 @@ def to_int(obj):
 
 def print_field(caret, field, term: Terminal):
     term.fullscreen()
-    sys.stdout.write((' ' * to_int(term.width) + '\n') * (field.height + 1 + caret.max_new_line_count))
+    sys.stdout.write((' ' * to_int(term.width) + '\n')
+                     * (field.height + 1 + caret.max_new_line_count))
     with term.location(0, 0):
         print('-' * to_int(term.width))
         for i in range(len(field.map)):
@@ -123,7 +124,8 @@ def print_field(caret, field, term: Terminal):
 if __name__ == '__main__':
     if '--log-level' in sys.argv:
         arg_pos = sys.argv.index('--log-level')
-        if arg_pos + 1 < len(sys.argv) and not sys.argv[arg_pos + 1].startswith('-'):
+        if arg_pos + 1 < len(sys.argv) \
+                and not sys.argv[arg_pos + 1].startswith('-'):
             log_level = sys.argv[arg_pos + 1]
             set_log_level(log_level)
             sys.argv.pop(arg_pos)  # remove --log-level
@@ -141,7 +143,8 @@ if __name__ == '__main__':
     if '-f' in sys.argv:
         arg_pos = sys.argv.index('-f')
         from_file = True
-        if arg_pos + 1 < len(sys.argv) and not sys.argv[arg_pos + 1].startswith('-'):
+        if arg_pos + 1 < len(sys.argv) \
+                and not sys.argv[arg_pos + 1].startswith('-'):
             filename = sys.argv[arg_pos + 1]
             sys.argv.pop(arg_pos)  # remove --log-level
             sys.argv.pop(arg_pos)  # remove level name
