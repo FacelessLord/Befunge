@@ -13,6 +13,7 @@ else:
     from readchar.readchar_windows import readchar
 
 debug = False
+super_debug = False
 from_file = False
 from_program = True
 filename = ''
@@ -26,9 +27,9 @@ def main(execute=True):
         if from_program:
             program = '\\'
             print("Enter the program code: ")
-            while program[-1] == '\\':
+            while program[-1].strip() != '':
                 # cutting the last character and inserting \n
-                program = program[:-1] + (
+                program = program + (
                     '\n' if program != '\\' else '')
                 program += input()
             field = Field.from_text(program)
@@ -37,15 +38,18 @@ def main(execute=True):
             lines = sys.stdin.readlines()
             text = lines[0]
             for line in lines:
-                text += '\n' + line
+                text += line
+
             program = text
             field = Field.from_text(program)
 
     stack = Stack()
-    caret = Caret(stack, field, to_int(term.height) - field.height - 3, debug)
+    caret = Caret(stack, field, to_int(term.height) - field.height, debug)
     caret.executor.execute = execute
     logger.debug("Objects created")
 
+    # if super_debug:
+    #     input("Continue?")
     if debug:
         try:
             char = readchar()
@@ -56,7 +60,6 @@ def main(execute=True):
             print("You shouldn't use pipe without -p option")
             exit()
         # field height shouldn't change
-        sys.stdout.write('\n' * (field.height + 1))
         print_field(caret, field, term)
 
     caret.read_instruction(field)
@@ -69,7 +72,7 @@ def main(execute=True):
         caret.move(field)
         caret.read_instruction(field)
 
-        if debug:
+        if debug or super_debug:
             print_field(caret, field, term)
         else:
             print(caret.diff, end='')
@@ -77,6 +80,9 @@ def main(execute=True):
 
         if debug:
             char = readchar()
+            if char == 'c':
+                print('\nForced exit')
+                exit()
 
         logger.debug("Move performed")
     print()
@@ -88,12 +94,11 @@ def to_int(obj):
     return int(obj)
 
 
-def print_field(caret, field, term):
-    with term.location(0, max(0,
-                              to_int(term.height)
-                              - field.height
-                              - caret.new_line_count
-                              - 1)):
+def print_field(caret, field, term: Terminal):
+    term.fullscreen()
+    sys.stdout.write((' ' * term.width + '\n') * (field.height + 1 + caret.max_new_line_count))
+    with term.location(0, 0):
+        print('-' * term.width)
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
@@ -110,7 +115,7 @@ def print_field(caret, field, term):
 
         sys.stdout.write(' ' * to_int(term.width))
         sys.stdout.write('\r' + str(caret.stack) + '\n')
-
+        print('-' * term.width)
         sys.stdout.write(caret.output)
     sys.stdout.flush()
 
@@ -118,7 +123,7 @@ def print_field(caret, field, term):
 if __name__ == '__main__':
     if '--log-level' in sys.argv:
         arg_pos = sys.argv.index('--log-level')
-        if arg_pos + 1 < len(sys.argv):
+        if arg_pos + 1 < len(sys.argv) and not sys.argv[arg_pos + 1].startswith('-'):
             log_level = sys.argv[arg_pos + 1]
             set_log_level(log_level)
             sys.argv.pop(arg_pos)  # remove --log-level
@@ -136,7 +141,7 @@ if __name__ == '__main__':
     if '-f' in sys.argv:
         arg_pos = sys.argv.index('-f')
         from_file = True
-        if arg_pos + 1 < len(sys.argv):
+        if arg_pos + 1 < len(sys.argv) and not sys.argv[arg_pos + 1].startswith('-'):
             filename = sys.argv[arg_pos + 1]
             sys.argv.pop(arg_pos)  # remove --log-level
             sys.argv.pop(arg_pos)  # remove level name
@@ -147,5 +152,9 @@ if __name__ == '__main__':
     if '--debug' in sys.argv:
         debug = True
         sys.argv.pop(sys.argv.index('--debug'))  # remove --debug
+
+    if '--super-debug' in sys.argv:
+        super_debug = True
+        sys.argv.pop(sys.argv.index('--super-debug'))  # remove --debug
 
     main()

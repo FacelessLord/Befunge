@@ -15,7 +15,7 @@ class Caret:
         self.stack = stack
         self.field = field
         self.string_mode = False
-        self.new_line_count = 1
+        self.new_line_count = 0
         self.max_new_line_count = max_new_line_count
         self.diff = ''
         self.output = ''

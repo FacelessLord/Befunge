@@ -64,7 +64,6 @@ def load_instructions(instructions: dict):
 
 def outprint(c, obj):
     obj_str = str(obj)
-    c.new_line_count += obj_str.count('\n')
     if c.new_line_count > c.max_new_line_count:
         while c.new_line_count > c.max_new_line_count:
             c.output = c.output[c.output.index('\n') + 1:]
@@ -76,6 +75,7 @@ def outprint(c, obj):
             and obj_str.count('\n') > 0:
         print('\n', end='')
     c.output += obj_str
+    c.new_line_count += obj_str.count('\n')
 
 
 def jump(c):
