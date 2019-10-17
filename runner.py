@@ -15,7 +15,7 @@ else:
 debug = False
 super_debug = False
 from_file = False
-from_pipe = True
+from_pipe = False
 filename = ''
 
 help_string = "    ____       ____                       __\n" \
@@ -47,7 +47,7 @@ def clean_up():
     debug = False
     super_debug = False
     from_file = False
-    from_pipe = True
+    from_pipe = False
     filename = ''
 
 
@@ -142,7 +142,7 @@ def print_field(caret, field, term: Terminal):
         # sys.stdout.write(' ' * to_int(term.width))
         sys.stdout.write('\r' + str(caret.stack) + '\n')
         print('-' * to_int(term.width))
-        debug_len = min(term.height - field.height - 3, len(caret.debug_messages) - 3)
+        debug_len = min(to_int(term.height) - field.height - 3, len(caret.debug_messages) - 3)
         for i in range(0, debug_len):
             sys.stdout.write(caret.debug_messages[i])
         caret.debug_messages = []
@@ -154,7 +154,7 @@ def print_field(caret, field, term: Terminal):
 
 def clear_screen(term: Terminal):
     term.location(0, 0)
-    for i in range(0, term.height):
+    for i in range(0, to_int(term.height)):
         sys.stdout.write(' ' * to_int(term.width))
     sys.stdout.flush()
 
@@ -184,13 +184,13 @@ def parse_args():
             return False
 
     if '-f' in sys.argv:
-        arg_pos = sys.argv.index('-f')
         from_file = True
+        arg_pos = sys.argv.index('-f')
         if arg_pos + 1 < len(sys.argv) \
                 and not sys.argv[arg_pos + 1].startswith('-'):
             filename = sys.argv[arg_pos + 1]
-            sys.argv.pop(arg_pos)  # remove --log-level
-            sys.argv.pop(arg_pos)  # remove level name
+            sys.argv.pop(arg_pos)  # remove -f
+            sys.argv.pop(arg_pos)  # remove filename
         else:
             print("Please, specify the file to read from")
             return False

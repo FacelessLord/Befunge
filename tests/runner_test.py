@@ -30,17 +30,6 @@ def test_runner_implicit_program_run():
         raise e
 
 
-def test_runner_explicit_input():
-    with open("tests/fld_test_program.txt", 'rt') as f:
-        sys.stdin = f
-        try:
-            runner.clean_up()
-            assert not runner.parse_args()
-            assert not runner.from_file
-        except Exception as e:
-            raise e
-
-
 def test_runner_stream_input():
     with open("tests/fld_test_program.txt", 'rt') as f:
         sys.stdin = f
@@ -48,7 +37,7 @@ def test_runner_stream_input():
             sys.argv.append('-p')
             runner.clean_up()
             runner.parse_args()
-            assert not runner.from_pipe
+            assert runner.from_pipe
             assert not runner.from_file
             runner.main(False)
         except Exception as e:
@@ -57,11 +46,17 @@ def test_runner_stream_input():
 
 def test_debug():
     try:
-        sys.argv.append('--debug')
+        sys.argv.pop()
+        sys.argv.pop()
         sys.argv.append('-f')
         sys.argv.append("tests/fld_test_program.txt")
+        sys.argv.append('--debug')
         runner.clean_up()
         runner.parse_args()
+        assert '-f' not in sys.argv
+        assert runner.from_file
+        assert not runner.from_pipe
+        assert runner.debug
         runner.main(False)
     except Exception as e:
         raise e
