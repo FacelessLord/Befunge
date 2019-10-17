@@ -32,9 +32,12 @@ help_string = "    ____       ____                       __\n" \
               "            <text stream> | python3 runner.py [options] -p\n" \
               "\n" \
               "  Options:\n" \
-              "  --log-level - which messages will be printed. There are 5 levels:\n" \
-              "                {INFO(by default), DEBUG, ERROR, CRITICAL, FATAl};\n" \
-              "  --debug     - step-by-step interpretation of a program (Can work bad on some consoles)\n"
+              "  --log-level - which messages will be printed." \
+              " There are 5 levels:\n" \
+              "                {INFO(by default), DEBUG, ERROR," \
+              " CRITICAL, FATAl};\n" \
+              "  --debug     - step-by-step interpretation of a" \
+              " program (Can work bad on some consoles)\n"
 
 
 def clean_up():
@@ -142,7 +145,8 @@ def print_field(caret, field, term: Terminal):
         # sys.stdout.write(' ' * to_int(term.width))
         sys.stdout.write('\r' + str(caret.stack) + '\n')
         print('-' * to_int(term.width))
-        debug_len = min(to_int(term.height) - field.height - 3, len(caret.debug_messages) - 3)
+        debug_len = min(to_int(term.height) - field.height - 3,
+                        len(caret.debug_messages) - 3)
         for i in range(0, debug_len):
             sys.stdout.write(caret.debug_messages[i])
         caret.debug_messages = []
@@ -203,7 +207,9 @@ def parse_args():
         super_debug = True
         sys.argv.pop(sys.argv.index('--super-debug'))  # remove --super-debug
 
-    if '-h' in sys.argv or '--help' in sys.argv or (not from_file and not from_pipe):
+    if '-h' in sys.argv \
+            or '--help' in sys.argv \
+            or (not from_file and not from_pipe):
         print(help_string)
         return False
 

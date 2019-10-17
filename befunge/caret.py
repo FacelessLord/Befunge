@@ -55,7 +55,8 @@ class Caret:
             if self.current_instruction != ' ' and \
                     self.current_instruction != '\n':
                 self.executor[self.current_instruction](self)
-                logger.debug("Instruction executed: '" + self.current_instruction + "'")
+                logger.debug("Instruction executed: '"
+                             + self.current_instruction + "'")
 
     def set_direction(self, new_direction):
         self.direction = new_direction
