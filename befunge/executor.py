@@ -62,13 +62,12 @@ def load_instructions(instructions: dict):
     logger.debug("Instructions loaded")
 
 
+def chk_folding(obj_str, min, max):
+    raise IndexError()
+
+
 def outprint(c, obj):
     obj_str = str(obj)
-    if c.new_line_count > c.max_new_line_count:
-        while c.new_line_count > c.max_new_line_count:
-            c.output = c.output[c.output.index('\n') + 1:]
-            c.new_line_count -= 1
-
     c.diff = obj_str
     if c.debug \
             and c.new_line_count < c.max_new_line_count \

@@ -40,7 +40,7 @@ def test_load_file():
     fld = Field.load_file("tests/fld_test_program.txt")
     assert fld.width == 11
     assert fld.height == 5
-    assert fld.get_symbol_at(0, 0) == '>'
+    assert fld.get_symbol_at(0, 0) == ' '
     assert fld.get_symbol_at(10, 0) == 'v'
     assert fld.get_symbol_at(10, 4) == '<'
     assert fld.get_symbol_at(0, 4) == '^'

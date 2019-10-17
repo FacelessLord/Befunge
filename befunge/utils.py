@@ -1,25 +1,26 @@
-import logging
 from random import randint
 
-logger = logging.getLogger(__name__)
+from befunge.logging import get_logger
+
+logger = get_logger("befunge")
 
 
 def set_log_level(log_level: str):
     lower = log_level.lower()
     if lower == 'debug':
-        logging.basicConfig(level=logging.DEBUG)
+        logger.set_level(log_level)
         logger.debug("log-level=" + log_level)
     if lower == 'info':
-        logging.basicConfig(level=logging.INFO)
+        logger.set_level(log_level)
         logger.info("log-level=" + log_level)
     if lower == 'warning':
-        logging.basicConfig(level=logging.WARNING)
+        logger.set_level(log_level)
         logger.warning("log-level=" + log_level)
     if lower == 'error':
-        logging.basicConfig(level=logging.ERROR)
+        logger.set_level(log_level)
         logger.error("log-level=" + log_level)
     if lower == 'critical':
-        logging.basicConfig(level=logging.CRITICAL)
+        logger.set_level(log_level)
         logger.critical("log-level=" + log_level)
 
 

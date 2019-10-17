@@ -15,36 +15,64 @@ else:
 debug = False
 super_debug = False
 from_file = False
-from_program = True
+from_pipe = True
 filename = ''
+
+help_string = "    ____       ____                       __\n" \
+              "   / __ )___  / __/_  ______  ____ ____  / /\n" \
+              "  / __  / _ \\/ /_/ / / / __ \\/ __ `/ _ \\/ / \n" \
+              " / /_/ /  __/ __/ /_/ / / / / /_/ /  __/_/  \n" \
+              "/_____/\\___/_/  \\__,_/_/ /_/\\__, /\\___(_)   \n" \
+              "                           /____/           \n" \
+              "  Faceless Befunge Interpreter:\n" \
+              "     enables you to run Befunge programs on your computer.\n" \
+              "\n" \
+              " Examples: python3 runner.py [options]\n" \
+              "            python3 runner.py [options] -f programfile.bfg\n" \
+              "            <text stream> | python3 runner.py [options] -p\n" \
+              "\n" \
+              "  Options:\n" \
+              "  --log-level - which messages will be printed. There are 5 levels:\n" \
+              "                {INFO(by default), DEBUG, ERROR, CRITICAL, FATAl};\n" \
+              "  --debug     - step-by-step interpretation of a program (Can work bad on some consoles)\n"
+
+
+def clean_up():
+    global debug
+    global super_debug
+    global from_file
+    global from_pipe
+    global filename
+
+    debug = False
+    super_debug = False
+    from_file = False
+    from_pipe = True
+    filename = ''
 
 
 def main(execute=True):
     term = Terminal()
     if from_file:
         field = Field.load_file(filename)
-    else:
-        if from_program:
-            program = '\\'
-            print("Enter the program code: ")
-            while program[-1].strip() != '':
-                # cutting the last character and inserting \n
-                program = program + (
-                    '\n' if program != '\\' else '')
-                program += input()
-            field = Field.from_text(program)
-            print('-' * (field.width + 2))
-        else:
-            lines = sys.stdin.readlines()
-            text = lines[0]
-            for line in lines:
-                text += line
+    elif from_pipe:
+        lines = sys.stdin.readlines()
+        text = lines[0]
+        for line in lines:
+            text += line
 
-            program = text
-            field = Field.from_text(program)
+        program = text
+        field = Field.from_text(program)
+    else:
+        return
 
     stack = Stack()
-    caret = Caret(stack, field, to_int(term.height) - field.height, debug)
+    caret = Caret(stack,
+                  field,
+                  max(3, to_int(term.height) - field.height),
+                  debug)
+    if debug:
+        logger.set_output(caret)
     caret.executor.execute = execute
     logger.debug("Objects created")
 
@@ -55,10 +83,10 @@ def main(execute=True):
             char = readchar()
             if char == 'c':
                 print('\nForced exit')
-                exit()
+                return
         except Exception:
             print("You shouldn't use pipe without -p option")
-            exit()
+            return
         # field height shouldn't change
         print_field(caret, field, term)
 
@@ -82,7 +110,7 @@ def main(execute=True):
             char = readchar()
             if char == 'c':
                 print('\nForced exit')
-                exit()
+                return
 
         logger.debug("Move performed")
     print()
@@ -95,11 +123,8 @@ def to_int(obj):
 
 
 def print_field(caret, field, term: Terminal):
-    term.fullscreen()
-    sys.stdout.write((' ' * to_int(term.width) + '\n')
-                     * (field.height + 1 + caret.max_new_line_count))
+    clear_screen(term)
     with term.location(0, 0):
-        print('-' * to_int(term.width))
         for i in range(len(field.map)):
             if i != caret.pos.y:
                 for j in range(0, field.width):
@@ -114,14 +139,32 @@ def print_field(caret, field, term: Terminal):
                     sys.stdout.write(field.map[i][j])
                 sys.stdout.write('\n')
 
-        sys.stdout.write(' ' * to_int(term.width))
+        # sys.stdout.write(' ' * to_int(term.width))
         sys.stdout.write('\r' + str(caret.stack) + '\n')
         print('-' * to_int(term.width))
+        debug_len = min(term.height - field.height - 3, len(caret.debug_messages) - 3)
+        for i in range(0, debug_len):
+            sys.stdout.write(caret.debug_messages[i])
+        caret.debug_messages = []
+        if len(caret.debug_messages) - 3 > debug_len:
+            print(str(len(caret.debug_messages) - debug_len) + " more...")
         sys.stdout.write(caret.output)
     sys.stdout.flush()
 
 
-if __name__ == '__main__':
+def clear_screen(term: Terminal):
+    term.location(0, 0)
+    for i in range(0, term.height):
+        sys.stdout.write(' ' * to_int(term.width))
+    sys.stdout.flush()
+
+
+def parse_args():
+    global from_file
+    global from_pipe
+    global filename
+    global debug
+    global super_debug
     if '--log-level' in sys.argv:
         arg_pos = sys.argv.index('--log-level')
         if arg_pos + 1 < len(sys.argv) \
@@ -135,10 +178,10 @@ if __name__ == '__main__':
                   "{INFO(by default), DEBUG, ERROR, CRITICAL, FATAl}")
 
     if '-p' in sys.argv:
-        from_program = False
+        from_pipe = True
         if '--debug' in sys.argv:
             print("Debug mode is available only with argument-defined program")
-            exit()
+            return False
 
     if '-f' in sys.argv:
         arg_pos = sys.argv.index('-f')
@@ -150,7 +193,7 @@ if __name__ == '__main__':
             sys.argv.pop(arg_pos)  # remove level name
         else:
             print("Please, specify the file to read from")
-            exit()
+            return False
 
     if '--debug' in sys.argv:
         debug = True
@@ -158,6 +201,16 @@ if __name__ == '__main__':
 
     if '--super-debug' in sys.argv:
         super_debug = True
-        sys.argv.pop(sys.argv.index('--super-debug'))  # remove --debug
+        sys.argv.pop(sys.argv.index('--super-debug'))  # remove --super-debug
 
-    main()
+    if '-h' in sys.argv or '--help' in sys.argv or (not from_file and not from_pipe):
+        print(help_string)
+        return False
+
+    return True
+
+
+if __name__ == '__main__':
+    clean_up()
+    if parse_args():
+        main()

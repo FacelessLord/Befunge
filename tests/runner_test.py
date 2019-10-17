@@ -8,29 +8,61 @@ from befunge.field import Field
 from befunge.utils import Stack
 
 
-def test_runner_load():
-    try:
-        runner.from_file = True
-        runner.filename = "tests/fld_test_program.txt"
-        runner.main(False)
-    except Exception as e:
-        raise e
-
-
 def test_runner_run():
     try:
-        runner.from_file = True
-        runner.filename = "tests/fld_test_program.txt"
+        sys.argv.append('-f')
+        sys.argv.append("tests/fld_test_program.txt")
+        runner.clean_up()
+        runner.parse_args()
         runner.main(True)
     except Exception as e:
         raise e
 
 
-def test_runner_implicit_run():
+def test_runner_implicit_program_run():
     try:
         sys.argv.append('-f')
         sys.argv.append("tests/fld_test_program.txt")
-        import runner
+        runner.clean_up()
+        runner.parse_args()
+        runner.main()
+    except Exception as e:
+        raise e
+
+
+def test_runner_explicit_input():
+    with open("tests/fld_test_program.txt", 'rt') as f:
+        sys.stdin = f
+        try:
+            runner.clean_up()
+            assert not runner.parse_args()
+            assert not runner.from_file
+        except Exception as e:
+            raise e
+
+
+def test_runner_stream_input():
+    with open("tests/fld_test_program.txt", 'rt') as f:
+        sys.stdin = f
+        try:
+            sys.argv.append('-p')
+            runner.clean_up()
+            runner.parse_args()
+            assert not runner.from_pipe
+            assert not runner.from_file
+            runner.main(False)
+        except Exception as e:
+            raise e
+
+
+def test_debug():
+    try:
+        sys.argv.append('--debug')
+        sys.argv.append('-f')
+        sys.argv.append("tests/fld_test_program.txt")
+        runner.clean_up()
+        runner.parse_args()
+        runner.main(False)
     except Exception as e:
         raise e
 
@@ -44,3 +76,15 @@ def test_field_print():
         runner.print_field(caret, field, term)
     except Exception as e:
         raise e
+
+
+def test_to_int_with_num():
+    assert runner.to_int(5) == 5
+
+
+def test_to_int_with_str_num():
+    assert runner.to_int('5') == 5
+
+
+def test_to_int_none():
+    assert runner.to_int(None) == 0

@@ -20,6 +20,7 @@ class Caret:
         self.diff = ''
         self.output = ''
         self.debug = debug
+        self.debug_messages = []
         logger.debug("Caret init")
 
     def move(self, field):
@@ -54,8 +55,11 @@ class Caret:
             if self.current_instruction != ' ' and \
                     self.current_instruction != '\n':
                 self.executor[self.current_instruction](self)
-        logger.debug("Instruction executed")
+                logger.debug("Instruction executed: '" + self.current_instruction + "'")
 
     def set_direction(self, new_direction):
         self.direction = new_direction
-        logger.debug("Direction changed")
+        logger.debug("Direction changed: " + str(new_direction))
+
+    def write(self, message):
+        self.debug_messages.append(message)
